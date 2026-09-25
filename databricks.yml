@@ -1,0 +1,62 @@
+# This is a Declarative Automation Bundle definition for dab_project.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: dab_project
+  uuid: ea341719-4a7f-4dda-8927-bf82267cfca0
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    default: "udemy_citibike_dev"
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-7405604742681229.9.azuredatabricks.net
+    # variables:
+    #   catalog: dbw_gvev01_dbx_cicd_we_dev
+    #   schema: ${workspace.current_user.short_name}
+
+  uat:
+    mode: production
+    variables:
+      catalog: "udemy_citibike_uat"
+    presets:
+      name_prefix: '[uat] '    
+    workspace:
+      host: https://adb-7405606164123319.19.azuredatabricks.net
+      # We explicitly deploy to /Workspace/Users/gerrit.van.even@cartamundi.com to make sure we only have a single copy.
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    # variables:
+    #   catalog: dbw_gvev01_dbx_cicd_we_prod
+    #   schema: prod
+    permissions:
+      - user_name: gerrit.van.even@cartamundi.com
+        level: CAN_MANAGE
+    run_as:
+      user_name: gerrit.van.even@cartamundi.com
+
+  prd:
+    mode: production
+    variables:
+      catalog: "udemy_citibike_prd"
+    workspace:
+      host: https://adb-7405617963484002.2.azuredatabricks.net
+      # We explicitly deploy to /Workspace/Users/gerrit.van.even@cartamundi.com to make sure we only have a single copy.
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    # variables:
+    #   catalog: dbw_gvev01_dbx_cicd_we_prod
+    #   schema: prod
+    permissions:
+      - user_name: gerrit.van.even@cartamundi.com
+        level: CAN_MANAGE
+    run_as:
+      user_name: gerrit.van.even@cartamundi.com
