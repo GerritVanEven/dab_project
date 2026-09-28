@@ -39,10 +39,10 @@ targets:
     #   catalog: dbw_gvev01_dbx_cicd_we_prod
     #   schema: prod
     permissions:
-      - user_name: gerrit.van.even@cartamundi.com
+      - service_principal_name: 4b77a3bc-960d-4ed5-94d0-29901d2d6ec9
         level: CAN_MANAGE
     run_as:
-      user_name: gerrit.van.even@cartamundi.com
+      service_principal_name: 4b77a3bc-960d-4ed5-94d0-29901d2d6ec9
 
   prd:
     mode: production
@@ -56,7 +56,7 @@ targets:
     #   catalog: dbw_gvev01_dbx_cicd_we_prod
     #   schema: prod
     permissions:
-      - user_name: gerrit.van.even@cartamundi.com
+      - service_principal_name: 99efdf4b-6b02-457d-aac3-3fc78f3b4c2c
         level: CAN_MANAGE
     run_as:
-      user_name: gerrit.van.even@cartamundi.com
+      service_principal_name: 99efdf4b-6b02-457d-aac3-3fc78f3b4c2c
