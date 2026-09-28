@@ -1,0 +1,84 @@
+name: CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cd-deploy-uat:
+    name: Deploy to UAT
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install setuptools wheel
+
+      - name: Configure Databricks
+        run: |
+          # write out the profile (here "UAT")
+          cat <<EOF > ~/.databrickscfg
+          [UAT]
+          host = https://adb-7405606164123319.19.azuredatabricks.net
+          azure_tenant_id = ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id = ${{ secrets.AZURE_CLIENT_ID }}
+          azure_client_secret = ${{ secrets.AZURE_CLIENT_SECRET }}
+      
+      - name: Deploy to UAT
+        run: |
+          databricks bundle deploy \
+            --target uat \
+            --profile UAT
+
+  cd-deploy-prd:
+    name: Deploy to PRD
+    needs: cd-deploy-uat
+    runs-on: ubuntu-latest
+    environment: prd
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+  
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+  
+      - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+  
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install setuptools wheel
+  
+      - name: Configure Databricks
+        run: |
+          # write out the profile (here "PRD")
+          cat <<EOF > ~/.databrickscfg
+          [PRD]
+          host = https://adb-7405617963484002.2.azuredatabricks.net
+          azure_tenant_id = ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id = ${{ secrets.AZURE_CLIENT_ID }}
+          azure_client_secret = ${{ secrets.AZURE_CLIENT_SECRET }}
+      
+      - name: Deploy to PRD
+        run: |
+          databricks bundle deploy \
+            --target prd \
+            --profile PRD
+          
+              
